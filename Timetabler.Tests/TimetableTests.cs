@@ -17,6 +17,7 @@ namespace Timetabler.Tests
         {
             var timetable = new Timetable();
 
+            // 5 days per week, 8 slots per day
             var cycle = new Cycle(5, 8);
 
             cycle.ReserveSlot(0);
@@ -41,7 +42,7 @@ namespace Timetabler.Tests
 
             class7a.Events.Add(maths7a);
 
-            var session = new Session(maths7a, new Slot(2, 2));
+            var session = new Session(maths7a, new CycleSlot(2, 2));
 
             session.Resources.Add(mrsHoney);
 
@@ -52,7 +53,7 @@ namespace Timetabler.Tests
                 {block, new []{session}}
             });
 
-            var result = timetable.GetAvailableResources(cycle, new Slot(2, 2));
+            var result = timetable.GetAvailableResources(cycle, new CycleSlot(2, 2));
 
             Assert.That(result, Does.Not.Contain(mrsHoney));
         }

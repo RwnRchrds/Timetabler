@@ -11,7 +11,7 @@ namespace Timetabler.Interfaces
     {
         int DaysPerWeek { get; }
         int SlotsPerDay { get; }
-        Slot[] Reservations { get; }
-        Slot[] Slots { get; }
+        CycleSlot[] Reservations { get; }
+        CycleSlot[] Slots { get; }
     }
 }

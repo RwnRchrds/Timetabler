@@ -14,7 +14,7 @@ namespace Timetabler.Interfaces
         ICollection<IResource> Resources { get; }
         IDictionary<ICycle, IDictionary<IBlock, ISession[]>> Solution { get; }
 
-        IResource[] GetAvailableResources(ICycle cycle, Slot slot);
+        IResource[] GetAvailableResources(ICycle cycle, CycleSlot slot);
         bool TryBuild();
         bool ValidateSolution();
     }

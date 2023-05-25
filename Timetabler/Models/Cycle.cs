@@ -10,13 +10,13 @@ namespace Timetabler.Models
 {
     public class Cycle : ICycle
     {
-        private readonly ICollection<Slot> _reservations;
+        private readonly ICollection<CycleSlot> _reservations;
 
         public Cycle(int daysPerWeek, int slotsPerDay)
         {
             DaysPerWeek = daysPerWeek;
             SlotsPerDay = slotsPerDay;
-            _reservations = new HashSet<Slot>();
+            _reservations = new HashSet<CycleSlot>();
         }
 
         public void ReserveSlot(int slot)
@@ -33,30 +33,30 @@ namespace Timetabler.Models
 
             foreach (var day in days)
             {
-                _reservations.Add(new Slot(day, slot));
+                _reservations.Add(new CycleSlot(day, slot));
             }
         }
 
         public int DaysPerWeek { get; set; }
         public int SlotsPerDay { get; set; }
 
-        public Slot[] Slots
+        public CycleSlot[] Slots
         {
             get
             {
-                var slots = new List<Slot>();
+                var slots = new List<CycleSlot>();
 
                 for (int i = 0; i < DaysPerWeek; i++)
                 {
                     for (int j = 0; j < SlotsPerDay; j++)
                     {
-                        slots.Add(new Slot(i, j));
+                        slots.Add(new CycleSlot(i, j));
                     }
                 }
 
                 return slots.ToArray();
             }
         }
-        public Slot[] Reservations => _reservations.ToArray();
+        public CycleSlot[] Reservations => _reservations.ToArray();
     }
 }

@@ -10,10 +10,10 @@ namespace Timetabler.Models
 {
     public class Session : ISession
     {
-        private Slot _slot;
+        private CycleSlot _slot;
         private bool _locked;
 
-        public Session(IEvent timetableEvent, Slot slot)
+        public Session(IEvent timetableEvent, CycleSlot slot)
         {
             Resources = new HashSet<IResource>();
             Event = timetableEvent;
@@ -30,7 +30,7 @@ namespace Timetabler.Models
 
         public IEvent Event { get; }
 
-        public Slot Slot
+        public CycleSlot Slot
         {
             get { return _slot; }
             set

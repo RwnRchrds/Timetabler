@@ -6,30 +6,30 @@ using System.Threading.Tasks;
 
 namespace Timetabler.Structs
 {
-    public struct Slot : IEquatable<Slot>
+    public struct CycleSlot : IEquatable<CycleSlot>
     {
-        public Slot(int day, int period)
+        public CycleSlot(int day, int slot)
         {
             Day = day;
-            Period = period;
+            Slot = slot;
         }
 
         public int Day;
-        public int Period;
+        public int Slot;
 
-        public bool Equals(Slot other)
+        public bool Equals(CycleSlot other)
         {
-            return Day == other.Day && Period == other.Period;
+            return Day == other.Day && Slot == other.Slot;
         }
 
         public override bool Equals(object? obj)
         {
-            return obj is Slot other && Equals(other);
+            return obj is CycleSlot other && Equals(other);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Day, Period);
+            return HashCode.Combine(Day, Slot);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Timetabler.Models
             throw new NotImplementedException();
         }
 
-        public IResource[] GetAvailableResources(ICycle cycle, Slot slot)
+        public IResource[] GetAvailableResources(ICycle cycle, CycleSlot slot)
         {
             return Resources.Where(resource => !Solution.Any(solution => solution.Key == cycle 
                                                                          && solution.Value.Any(cycleSolution =>
