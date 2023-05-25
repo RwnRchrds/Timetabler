@@ -25,11 +25,7 @@ namespace Timetabler.Models
         /// <returns></returns>
         public bool TryBuild()
         {
-            Solution.Clear();
-
-            CpModel model = new CpModel();
-
-            return false;
+            throw new NotImplementedException();
         }
 
         public bool ValidateSolution()
