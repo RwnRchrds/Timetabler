@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32505.173
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Timetabler", "Timetabler\Timetabler.csproj", "{0852DBB6-C10E-4284-83E4-7251E58D04AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Timetabler.Tests", "Timetabler.Tests\Timetabler.Tests.csproj", "{1FBDD04D-1A23-4B27-A292-735B1B48BECF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0852DBB6-C10E-4284-83E4-7251E58D04AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0852DBB6-C10E-4284-83E4-7251E58D04AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0852DBB6-C10E-4284-83E4-7251E58D04AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0852DBB6-C10E-4284-83E4-7251E58D04AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FBDD04D-1A23-4B27-A292-735B1B48BECF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FBDD04D-1A23-4B27-A292-735B1B48BECF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FBDD04D-1A23-4B27-A292-735B1B48BECF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FBDD04D-1A23-4B27-A292-735B1B48BECF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AE40754A-DD98-48B4-8E57-81E8F6CB63DB}
+	EndGlobalSection
+EndGlobal
