@@ -16,7 +16,7 @@ namespace Timetabler.Models
         }
 
         public string Name { get; }
-        public int TotalPeriods => Events.Sum(e => e.Duration * e.Quantity);
+        public int TotalSlots => Events.Sum(e => e.Duration * e.Quantity);
         public ICollection<IEvent> Events { get; }
     }
 }

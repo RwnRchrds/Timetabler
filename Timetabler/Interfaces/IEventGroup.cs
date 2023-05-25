@@ -9,7 +9,7 @@ namespace Timetabler.Interfaces
     public interface IEventGroup
     {
         string Name { get; }
-        int TotalPeriods { get; }
+        int TotalSlots { get; }
         ICollection<IEvent> Events { get; }
     }
 }

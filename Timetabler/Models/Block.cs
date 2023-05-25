@@ -20,7 +20,7 @@ namespace Timetabler.Models
 
         public bool Validate()
         {
-            int expectedPeriods = 0;
+            int expectedSlots = 0;
             var eventGroups = EventGroups.ToArray();
 
             for (int i = 0; i < eventGroups.Length; i++)
@@ -29,10 +29,10 @@ namespace Timetabler.Models
 
                 if (i == 0)
                 {
-                    expectedPeriods = eventGroup.TotalPeriods;
+                    expectedSlots = eventGroup.TotalSlots;
                 }
 
-                if (eventGroup.TotalPeriods != expectedPeriods)
+                if (eventGroup.TotalSlots != expectedSlots)
                 {
                     return false;
                 }
