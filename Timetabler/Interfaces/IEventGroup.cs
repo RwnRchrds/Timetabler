@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Timetabler.Interfaces
+﻿namespace Timetabler.Interfaces
 {
-    public interface IEventGroup
+    public interface IEventGroup : IResourceOwner, ISlotOwner
     {
+        IBlock Block { get; }
         string Name { get; }
-        int TotalSlots { get; }
-        ICollection<IEvent> Events { get; }
+        IEvent[] Events { get; }
+        IEvent AddEvent(string name, int duration, int quantity);
+        void RemoveEvent(string name);
+        void RemoveAllEvents();
+        bool Validate(out string validationError);
+        IEventGroup Clone(IBlock block);
     }
 }

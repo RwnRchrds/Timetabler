@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Timetabler.Interfaces
 {
-    public interface IBlock
+    public interface IBlock : IResourceOwner, ISlotOwner
     {
+        IWeek Week { get; }
         string Name { get; }
-        ICollection<IEventGroup> EventGroups { get; }
-        bool Validate();
+        IEventGroup[] EventGroups { get; }
+        bool Validate(out string validationError);
+        IEventGroup AddEventGroup(string name);
+        void RemoveEventGroup(string name);
+        void RemoveAllEventGroups();
+        IBlock Clone(IWeek week);
     }
 }

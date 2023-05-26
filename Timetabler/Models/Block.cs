@@ -1,44 +1,78 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Timetabler.Interfaces;
+﻿using Timetabler.Interfaces;
 
 namespace Timetabler.Models
 {
-    public class Block : IBlock
+    public class Block : ResourceOwner, IBlock
     {
-        public Block(string name)
+        public IWeek Week { get; }
+
+        protected readonly ICollection<IEventGroup> EventGroupCollection;
+
+        public Block(IWeek week, string name)
         {
+            Week = week;
             Name = name;
-            EventGroups = new HashSet<IEventGroup>();
+            EventGroupCollection = new HashSet<IEventGroup>();
         }
 
-        public string Name { get; set; }
-        public ICollection<IEventGroup> EventGroups { get; }
+        public string Name { get; }
+        public ISlotAllocation[] SlotAllocations => EventGroups.SelectMany(g => g.SlotAllocations).ToArray();
+        public IEventGroup[] EventGroups => EventGroupCollection.ToArray();
 
-        public bool Validate()
+        public bool Validate(out string validationError)
         {
-            int expectedSlots = 0;
-            var eventGroups = EventGroups.ToArray();
+            validationError = "";
 
-            for (int i = 0; i < eventGroups.Length; i++)
+            foreach (var eventGroup in EventGroups)
             {
-                var eventGroup = eventGroups[i];
-
-                if (i == 0)
-                {
-                    expectedSlots = eventGroup.TotalSlots;
-                }
-
-                if (eventGroup.TotalSlots != expectedSlots)
+                if (!eventGroup.Validate(out validationError))
                 {
                     return false;
                 }
             }
 
             return true;
+        }
+
+        public IEventGroup AddEventGroup(string name)
+        {
+            var eventGroup = EventGroupCollection.FirstOrDefault(g => g.Name == name);
+
+            if (eventGroup == null)
+            {
+                eventGroup = new EventGroup(this, name);
+
+                EventGroupCollection.Add(eventGroup);
+            }
+
+            return eventGroup;
+        }
+
+        public void RemoveEventGroup(string name)
+        {
+            var eventGroup = EventGroupCollection.FirstOrDefault(g => g.Name == name);
+
+            if (eventGroup != null)
+            {
+                EventGroupCollection.Remove(eventGroup);
+            }
+        }
+
+        public void RemoveAllEventGroups()
+        {
+            EventGroupCollection.Clear();
+        }
+
+        public IBlock Clone(IWeek week)
+        {
+            var block = new Block(week, Name);
+
+            foreach (var eventGroup in EventGroupCollection)
+            {
+                block.EventGroupCollection.Add(eventGroup.Clone(block));
+            }
+
+            return block;
         }
     }
 }
