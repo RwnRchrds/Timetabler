@@ -5,8 +5,6 @@ namespace Timetabler.Solvers
 {
     public class DefaultSolver : ISolver
     {
-        // TODO: Add swapping to try all possible combinations
-
         public bool TrySolve(ITimetable timetable)
         {
             bool success = true;
@@ -28,13 +26,34 @@ namespace Timetabler.Solvers
 
                             if (requiredSessions > 0)
                             {
-                                var possibleSlots = week.GetPossibleSlotAllocations(timetableEvent.SpreadConstraint);
+                                var possibleSlots = week.GetPossibleSlotAllocations(timetableEvent.SpreadConstraint)
+                                    .ToList();
 
-                                var allocations = possibleSlots.Shuffle().Take(requiredSessions);
+                                possibleSlots.Shuffle();
 
-                                foreach (var allocation in allocations)
+                                for (int i = 0; i < requiredSessions; i++)
                                 {
-                                    timetableEvent.AddSession(allocation, false);
+                                    bool solutionFound = false;
+                                    
+                                    foreach (var possibleSlot in possibleSlots)
+                                    {
+                                        var sessionId = timetableEvent.AddSession(possibleSlot, false);
+
+                                        if (TryAllocateResources(week, timetableEvent))
+                                        {
+                                            solutionFound = true;
+                                        }
+                                        else
+                                        {
+                                            // TODO: Add swapping to try all possible combinations
+                                            timetableEvent.RemoveSession(sessionId.Id);
+                                        }
+                                    }
+
+                                    if (solutionFound)
+                                    {
+                                        break;
+                                    }
                                 }
                             }
 
