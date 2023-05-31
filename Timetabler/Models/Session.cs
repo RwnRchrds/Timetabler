@@ -30,7 +30,7 @@ namespace Timetabler.Models
             return Array.Empty<ISlotAllocation>();
         }
 
-        public IResourceAllocation[] AllResourceAllocations => ResourceAllocations.Union(Event.ResourceAllocations)
-            .Union(Event.EventGroup.ResourceAllocations).Union(Event.EventGroup.Block.ResourceAllocations).ToArray();
+        public IResourceAllocation[] AllResourceAllocations =>
+            ResourceAllocations.Union(Event.AllResourceAllocations).ToArray();
     }
 }

@@ -1,4 +1,5 @@
-﻿using Timetabler.Structs;
+﻿using Timetabler.Models;
+using Timetabler.Structs;
 
 namespace Timetabler.Interfaces
 {
@@ -6,6 +7,7 @@ namespace Timetabler.Interfaces
     {
         ISlotAllocation[] SlotAllocations { get; }
         void AllocateSlot(WeekSlot slot, bool locked);
+        void AllocateSlots(WeekSlot[] slots, bool locked);
         void DeallocateUnlockedSlots();
         void DeallocateAllSlots();
         ICompositeSession Clone(IEvent timetableEvent);

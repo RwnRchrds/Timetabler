@@ -8,12 +8,16 @@ namespace Timetabler.Models
         {
             Name = name;
             Tags = new List<string>();
+            MaxAllocations = 0;
+            AllowSimultaneousSessions = false;
 
             AddTags(tags);
         }
 
         public ICollection<string> Tags { get; }
         public string Name { get; set; }
+        public int MaxAllocations { get; set; }
+        public bool AllowSimultaneousSessions { get; set; }
 
         public void AddTags(params string[] tags)
         {

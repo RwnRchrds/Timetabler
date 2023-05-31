@@ -27,6 +27,14 @@ namespace Timetabler.Models
             }
         }
 
+        public void AllocateSlots(WeekSlot[] slots, bool locked)
+        {
+            foreach (var slot in slots)
+            {
+                AllocateSlot(slot, locked);
+            }
+        }
+
         public void DeallocateUnlockedSlots()
         {
             var unlockedSlots = _slotAllocations.Where(a => !a.Locked).ToArray();

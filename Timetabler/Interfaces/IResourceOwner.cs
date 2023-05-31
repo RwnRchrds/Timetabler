@@ -8,6 +8,7 @@ namespace Timetabler.Interfaces
         IResourceAllocation[] ResourceAllocations { get; }
         void RequireResource(string resourceTag, int quantity);
         void AllocateResource(IResource resource, bool locked);
+        void AllocateResources(IResource[] resources, bool locked);
         void DeallocateUnlockedResources();
         void DeallocateAllResources();
         bool HasRequiredResources();

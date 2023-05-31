@@ -86,15 +86,57 @@ namespace Timetabler.Models
         {
             validationError = "";
 
-            if (Sessions.Length != SpreadConstraint.Quantity * SpreadConstraint.Duration)
+            var allocationCount = Sessions.Sum(s => s.GetSlotAllocations().Length);
+
+            if (allocationCount != SpreadConstraint.Quantity * SpreadConstraint.Duration)
             {
                 validationError =
-                    $"Event {Name} requires {SpreadConstraint.Quantity * SpreadConstraint.Duration} sessions, but has {Sessions.Length}.";
+                    $"Event {Name} requires {SpreadConstraint.Quantity * SpreadConstraint.Duration} slots, but has {allocationCount}.";
                 return false;
             }
 
-            // TODO: Check sessions intended as extended duration events do not overflow onto the following day id this is not allowed.
-            // E.g. a double period should not start on Tue:Last and end one Wed:0
+            foreach (var session in Sessions)
+            {
+                var slotAllocations = session.GetSlotAllocations();
+                
+                if (slotAllocations.Length > 1)
+                {
+                    var allocationFirstSlot = slotAllocations[0];
+                    
+                    for (int i = 1; i < slotAllocations.Length; i++)
+                    {
+                        var allocation = slotAllocations[i];
+                        var previousAllocation = slotAllocations[i - 1];
+
+                        if (!EventGroup.Block.Week.Timetable.AreSlotsConsecutive(allocation.WeekSlot,
+                                previousAllocation.WeekSlot))
+                        {
+                            validationError = $"Event {Name} consists of a session with non-consecutive slots.";
+                            return false;
+                        }
+
+                        var breaks = EventGroup.Block.Week.Timetable.Breaks.ToList();
+
+                        if (!EventGroup.Block.Week.Timetable.Constraints.AllowSlotsToOverflowDays)
+                        {
+                            // Add a break at the end of each day
+                            for (int k = 0; k < EventGroup.Block.Week.Timetable.Cycle.DaysPerWeek; k++)
+                            {
+                                breaks.Add(new Break("end-of-day", new WeekSlot(k, EventGroup.Block.Week.Timetable.Cycle.SlotsPerDay - 1), new WeekSlot(k + 1, 0)));
+                            }
+                        }
+
+                        var violatedBreak = breaks.FirstOrDefault(a =>
+                            a.Start.LessThan(allocation.WeekSlot) && a.End.GreaterThan(allocationFirstSlot.WeekSlot));
+
+                        if (violatedBreak != null)
+                        {
+                            validationError = $"Event {Name} session {session.Id} runs through break {violatedBreak.Name}";
+                            return false;
+                        }
+                    }
+                }
+            }
 
             return true;
         }
@@ -124,5 +166,8 @@ namespace Timetabler.Models
         }
 
         public ISlotAllocation[] SlotAllocations => Sessions.SelectMany(s => s.GetSlotAllocations()).ToArray();
+
+        public IResourceAllocation[] AllResourceAllocations =>
+            ResourceAllocations.Union(EventGroup.AllResourceAllocations).ToArray();
     }
 }

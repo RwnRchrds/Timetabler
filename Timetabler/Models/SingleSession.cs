@@ -14,7 +14,10 @@ namespace Timetabler.Models
 
         public void ChangeSlot(WeekSlot slot, bool locked)
         {
-            SlotAllocation = new SlotAllocation(slot, locked);
+            if (!SlotAllocation.Locked)
+            {
+                SlotAllocation = new SlotAllocation(slot, locked);
+            }
         }
 
         public ISingleSession Clone(IEvent timetableEvent)

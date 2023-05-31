@@ -33,6 +33,14 @@ namespace Timetabler.Models
             }
         }
 
+        public void AllocateResources(IResource[] resources, bool locked)
+        {
+            foreach (var resource in resources)
+            {
+                AllocateResource(resource, locked);
+            }
+        }
+
         public void DeallocateUnlockedResources()
         {
             foreach (var resourceAllocation in ResourceAllocationCollection.Where(allocation => !allocation.Locked).ToArray())

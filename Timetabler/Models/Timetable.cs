@@ -12,6 +12,7 @@ namespace Timetabler.Models
 
         public Timetable(int slotsPerDay, int daysPerWeek, int weeksPerCycle)
         {
+            Constraints = new TimetableConstraints();
             Cycle = new Cycle(slotsPerDay, daysPerWeek, weeksPerCycle);
             FirstDayOfWeek = DayOfWeek.Monday;
             _breaks = new HashSet<IBreak>();
@@ -35,6 +36,19 @@ namespace Timetabler.Models
             }
 
             return timetableBreak;
+        }
+
+        public IBreak[] AddBreak(string name, int startSlot, int endSlot)
+        {
+            var breaksToAdd = new List<IBreak>();
+
+            for (int i = 0; i < Cycle.DaysPerWeek; i++)
+            {
+                var timetableBreak = AddBreak($"{name}{i}", new WeekSlot(i, startSlot), new WeekSlot(i, endSlot));
+                breaksToAdd.Add(timetableBreak);
+            }
+
+            return breaksToAdd.ToArray();
         }
 
         public void RemoveBreak(string name)
@@ -155,6 +169,8 @@ namespace Timetabler.Models
         public Cycle Cycle { get; }
         public DayOfWeek FirstDayOfWeek { get; set; }
         public bool AllowSlotOverflow { get; set; }
+
+        public TimetableConstraints Constraints { get; }
 
         public WeekSlot[] Slots
         {

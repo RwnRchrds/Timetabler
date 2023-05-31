@@ -18,8 +18,12 @@ namespace Timetabler.Interfaces
         IResource[] GetAvailableResources(WeekSlot slot);
         IResource[] GetAvailableResources(WeekSlot[] slots);
         WeekSlot[][] GetPossibleSlotAllocations(SpreadConstraint constraint);
+        WeekSlot[][] GetPossibleSlotAllocations(SpreadConstraint spreadConstraint,
+            ResourceConstraint[] resourceConstraints);
+        WeekSlot[][] GetPossibleSlotAllocations(SpreadConstraint constraint, IResource[] requiredResources);
         WeekSlot[] GetAvailableSlots(IResource[] resources);
         WeekSlot[] GetAvailableSlots(IResource resource);
+        ISession[] GetAllocations(IResource resource, WeekSlot[] slots);
         bool HasConflict(IResource resource, WeekSlot slot);
         bool Validate(out string validationError);
         IWeek Clone(ITimetable timetable);

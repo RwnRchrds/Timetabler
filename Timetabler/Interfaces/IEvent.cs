@@ -2,7 +2,7 @@
 
 namespace Timetabler.Interfaces
 {
-    public interface IEvent : IResourceOwner, ISlotOwner
+    public interface IEvent : IResourceOwner, IResourceOwnerChild, ISlotOwner
     {
         IEventGroup EventGroup { get; }
         string Name { get; }

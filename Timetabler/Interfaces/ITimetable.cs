@@ -6,7 +6,7 @@ namespace Timetabler.Interfaces
     {
         Cycle Cycle { get; }
         DayOfWeek FirstDayOfWeek { get; set; }
-        bool AllowSlotOverflow { get; set; }
+        TimetableConstraints Constraints { get; }
         WeekSlot[] Slots { get; }
         IBreak[] Breaks { get; }
         WeekSlot[] UnreservedSlots { get; }
@@ -21,6 +21,7 @@ namespace Timetabler.Interfaces
         void RemoveWeek(string name);
         void RemoveAllWeeks();
         IBreak AddBreak(string name, WeekSlot start, WeekSlot end);
+        IBreak[] AddBreak(string name, int startSlot, int endSlot);
         void RemoveBreak(string name);
         void RemoveAllBreaks();
         bool TrySolve(ISolver solver);

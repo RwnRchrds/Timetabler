@@ -1,6 +1,6 @@
 ﻿namespace Timetabler.Interfaces
 {
-    public interface IEventGroup : IResourceOwner, ISlotOwner
+    public interface IEventGroup : IResourceOwner, IResourceOwnerChild, ISlotOwner
     {
         IBlock Block { get; }
         string Name { get; }
