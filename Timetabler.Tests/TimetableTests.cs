@@ -22,12 +22,34 @@ public class TimetableTests
 
         var week1 = timetable.AddWeek("Week 1");
 
-        week1.AddResource("Mr Jones", "teacher");
-        week1.AddResource("Mrs Smith", "teacher");
-        week1.AddResource("Mrs White", "teacher");
-        week1.AddResource("Mrs Newbie", "teacher");
-        week1.AddResource("Ms Patrick", "teacher");
-        week1.AddResource("Mr Smart", "teacher");
+        week1.AddResource("Mrs Jenwood", "art-teacher");
+        week1.AddResource("Ms Arindell", "art-teacher");
+        week1.AddResource("Ms Gauld", "citizenship-teacher");
+        week1.AddResource("Mr Simpson", "citizenship-teacher");
+        week1.AddResource("Mr Parsons", "dt-teacher");
+        week1.AddResource("Mr Alban", "dt-teacher");
+        week1.AddResource("Mr Bridgett", "drama-teacher");
+        week1.AddResource("Miss Swan", "drama-teacher");
+        week1.AddResource("Mr Morrish", "english-teacher");
+        week1.AddResource("Mrs Boulnois", "english-teacher");
+        week1.AddResource("Miss Raeburn", "geography-teacher");
+        week1.AddResource("Ms Bassin", "geography-teacher");
+        week1.AddResource("Mrs Goodman", "history-teacher");
+        week1.AddResource("Mr Matthews", "history-teacher");
+        week1.AddResource("Mr Richards", "ict-teacher");
+        week1.AddResource("Mr Bate", "ict-teacher");
+        week1.AddResource("Miss Symonds", "languages-teacher");
+        week1.AddResource("Ms Field", "languages-teacher");
+        week1.AddResource("Miss French", "mathematics-teacher");
+        week1.AddResource("Mrs Pimlott", "mathematics-teacher");
+        week1.AddResource("Mr Honey", "music-teacher");
+        week1.AddResource("Mrs Ridgeon", "music-teacher");
+        week1.AddResource("Mrs Harwood", "pe-teacher");
+        week1.AddResource("Mr Marker", "pe-teacher");
+        week1.AddResource("Mr Angafor", "re-teacher");
+        week1.AddResource("Mr Browne", "re-teacher");
+        week1.AddResource("Mrs Milner", "science-teacher");
+        week1.AddResource("Ms Bell", "science-teacher");
 
         var year7 = week1.AddResource("Year 7", "year-group", "year-7");
         var year8 = week1.AddResource("Year 8", "year-group", "year-8");
@@ -58,7 +80,7 @@ public class TimetableTests
         {
             new SchoolSubject("Art", 2, 0),
             new SchoolSubject("Citizenship", 1, 0),
-            new SchoolSubject("Design & Technology", 0, 1),
+            new SchoolSubject("DT", 0, 1),
             new SchoolSubject("Drama", 2, 0),
             new SchoolSubject("English", 3, 0),
             new SchoolSubject("Geography", 2, 0),
@@ -88,13 +110,13 @@ public class TimetableTests
                     if (subject.Singles > 0)
                     {
                         var subjectClass = eventGroup.AddEvent($"{regGroup.Name} {subject.SubjectName}", 1, subject.Singles);
-                        subjectClass.RequireResource("teacher", 1);
+                        subjectClass.RequireResource($"{subject.SubjectName.ToLower()}-teacher", 1);
                     }
 
                     if (subject.Doubles > 0)
                     {
                         var subjectClass = eventGroup.AddEvent($"{regGroup.Name} {subject.SubjectName}", 2, subject.Doubles);
-                        subjectClass.RequireResource("teacher", 1);
+                        subjectClass.RequireResource($"{subject.SubjectName.ToLower()}-teacher", 1);
                     }
                 }
             }

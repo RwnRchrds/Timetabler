@@ -15,6 +15,8 @@ namespace Timetabler.Interfaces
         void RemoveResource(string name);
         void RemoveAllResources();
         void RemoveAllBlocks();
+        void RemoveUnlockedSessions();
+        void RemoveAllSessions();
         IResource[] GetAvailableResources(WeekSlot slot);
         IResource[] GetAvailableResources(WeekSlot[] slots);
         WeekSlot[][] GetPossibleSlotAllocations(SpreadConstraint constraint);
@@ -23,8 +25,10 @@ namespace Timetabler.Interfaces
         WeekSlot[][] GetPossibleSlotAllocations(SpreadConstraint constraint, IResource[] requiredResources);
         WeekSlot[] GetAvailableSlots(IResource[] resources);
         WeekSlot[] GetAvailableSlots(IResource resource);
-        ISession[] GetAllocations(IResource resource, WeekSlot[] slots);
-        bool HasConflict(IResource resource, WeekSlot slot);
+        ISession[] GetResourceAllocations(IResource resource, WeekSlot[] slots);
+        ISession[] GetResourceAllocations(IResource resource);
+        bool ResourceHasConflict(IResource resource, WeekSlot slot);
+        bool ResourceHasCapacity(IResource resource);
         bool Validate(out string validationError);
         IWeek Clone(ITimetable timetable);
     }

@@ -8,7 +8,7 @@ namespace Timetabler.Models
         {
             Name = name;
             Tags = new List<string>();
-            MaxAllocations = 0;
+            MaxAllocations = -1;
             AllowSimultaneousSessions = false;
 
             AddTags(tags);

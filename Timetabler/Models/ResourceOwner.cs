@@ -67,5 +67,24 @@ namespace Timetabler.Models
 
             return true;
         }
+
+        public bool Validate(string ownerName, out string validationError)
+        {
+            validationError = "";
+            
+            foreach (var constraint in ResourceConstraints)
+            {
+                var resourceCount = ResourceAllocations.Count(a => a.Resource.Tags.Contains(constraint.ResourceTag));
+                
+                if (resourceCount < constraint.Quantity)
+                {
+                    validationError =
+                        $"Resource owner {ownerName} requires {constraint.Quantity} resource(s) with tag '{constraint.ResourceTag}', but has {resourceCount}.";
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }

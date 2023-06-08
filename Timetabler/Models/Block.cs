@@ -16,6 +16,7 @@ namespace Timetabler.Models
         }
 
         public string Name { get; }
+        public ISession[] Sessions => EventGroups.SelectMany(g => g.Events.SelectMany(e => e.Sessions)).ToArray();
         public ISlotAllocation[] SlotAllocations => EventGroups.SelectMany(g => g.SlotAllocations).ToArray();
         public IEventGroup[] EventGroups => EventGroupCollection.ToArray();
 
@@ -31,7 +32,7 @@ namespace Timetabler.Models
                 }
             }
 
-            return true;
+            return Validate(Name, out validationError);
         }
 
         public IEventGroup AddEventGroup(string name)

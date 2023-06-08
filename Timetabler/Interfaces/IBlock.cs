@@ -1,7 +1,7 @@
 ﻿
 namespace Timetabler.Interfaces
 {
-    public interface IBlock : IResourceOwner, ISlotOwner
+    public interface IBlock : IResourceOwner, ISessionOwner
     {
         IWeek Week { get; }
         string Name { get; }

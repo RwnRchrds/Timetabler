@@ -97,6 +97,18 @@ namespace Timetabler.Models
 
             foreach (var session in Sessions)
             {
+                foreach (var constraint in session.ResourceConstraints)
+                {
+                    var resourceCount = session.ResourceAllocations.Count(a => a.Resource.Tags.Contains(constraint.ResourceTag));
+                
+                    if (resourceCount < constraint.Quantity)
+                    {
+                        validationError =
+                            $"Event {Name} has a session that requires {constraint.Quantity} resources with tag {constraint.ResourceTag}, but only has {resourceCount}.";
+                        return false;
+                    }
+                }
+                
                 var slotAllocations = session.GetSlotAllocations();
                 
                 if (slotAllocations.Length > 1)
@@ -138,7 +150,7 @@ namespace Timetabler.Models
                 }
             }
 
-            return true;
+            return Validate(Name, out validationError);
         }
 
         public IEvent Clone(IEventGroup eventGroup)

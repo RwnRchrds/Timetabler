@@ -16,6 +16,8 @@ namespace Timetabler.Models
         public IBlock Block { get; }
         public string Name { get; }
 
+        public ISession[] Sessions => Events.SelectMany(e => e.Sessions).ToArray();
+
         public ISlotAllocation[] SlotAllocations =>
             Events.SelectMany(e => e.Sessions.SelectMany(s => s.GetSlotAllocations())).ToArray();
 
@@ -63,7 +65,7 @@ namespace Timetabler.Models
                 }
             }
 
-            return true;
+            return Validate(Name, out validationError);
         }
 
         public IEventGroup Clone(IBlock block)

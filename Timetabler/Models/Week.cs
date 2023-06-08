@@ -79,22 +79,54 @@ namespace Timetabler.Models
             _blocks.Clear();
         }
 
+        public void RemoveUnlockedSessions()
+        {
+            foreach (var block in Blocks)
+            {
+                foreach (var eventGroup in block.EventGroups)
+                {
+                    foreach (var groupEvent in eventGroup.Events)
+                    {
+                        groupEvent.RemoveUnlockedSessions();
+                    }
+                }
+            }
+        }
+
+        public void RemoveAllSessions()
+        {
+            foreach (var block in Blocks)
+            {
+                foreach (var eventGroup in block.EventGroups)
+                {
+                    foreach (var groupEvent in eventGroup.Events)
+                    {
+                        groupEvent.RemoveAllSessions();
+                    }
+                }
+            }
+        }
+
         public IResource[] GetAvailableResources(WeekSlot slot)
         {
-            var resources = Resources.Where(r => Blocks
-                .SelectMany(b => b.EventGroups.SelectMany(g => g.Events.SelectMany(e => e.Sessions)))
-                .Where(s => s.GetSlotAllocations().Any(a => a.WeekSlot.Equals(slot)))
-                .All(s => s.AllResourceAllocations.All(a => a.Resource != r || a.Resource.AllowSimultaneousSessions))).ToArray();
+            var resources = Resources.Where(r => ResourceHasCapacity(r) && Blocks
+                    .SelectMany(b => b.EventGroups.SelectMany(g => g.Events.SelectMany(e => e.Sessions)))
+                    .Where(s => s.GetSlotAllocations().Any(a => a.WeekSlot.Equals(slot)))
+                    .All(s => s.AllResourceAllocations.All(a =>
+                        a.Resource != r || a.Resource.AllowSimultaneousSessions)))
+                .ToArray();
 
             return resources;
         }
 
         public IResource[] GetAvailableResources(WeekSlot[] slots)
         {
-            var resources = Resources.Where(r => Blocks
-                .SelectMany(b => b.EventGroups.SelectMany(g => g.Events.SelectMany(e => e.Sessions)))
-                .Where(s => s.GetSlotAllocations().Any(a => slots.Contains(a.WeekSlot)))
-                .All(s => s.AllResourceAllocations.All(a => a.Resource != r || a.Resource.AllowSimultaneousSessions))).ToArray();
+            var resources = Resources.Where(r => ResourceHasCapacity(r) && Blocks
+                    .SelectMany(b => b.EventGroups.SelectMany(g => g.Events.SelectMany(e => e.Sessions)))
+                    .Where(s => s.GetSlotAllocations().Any(a => slots.Contains(a.WeekSlot)))
+                    .All(s => s.AllResourceAllocations.All(a =>
+                        a.Resource != r || a.Resource.AllowSimultaneousSessions)))
+                .ToArray();
 
             return resources;
         }
@@ -149,7 +181,8 @@ namespace Timetabler.Models
                             // Add a break at the end of each day
                             for (int k = 0; k < Timetable.Cycle.DaysPerWeek; k++)
                             {
-                                breaks.Add(new Break("end-of-day", new WeekSlot(k, Timetable.Cycle.SlotsPerDay - 1), new WeekSlot(k + 1, 0)));
+                                breaks.Add(new Break("end-of-day", new WeekSlot(k, Timetable.Cycle.SlotsPerDay - 1),
+                                    new WeekSlot(k + 1, 0)));
                             }
                         }
 
@@ -166,7 +199,8 @@ namespace Timetabler.Models
             return allocations.ToArray();
         }
 
-        public WeekSlot[][] GetPossibleSlotAllocations(SpreadConstraint spreadConstraint, ResourceConstraint[] resourceConstraints)
+        public WeekSlot[][] GetPossibleSlotAllocations(SpreadConstraint spreadConstraint,
+            ResourceConstraint[] resourceConstraints)
         {
             var allocations = GetPossibleSlotAllocations(spreadConstraint).Where(slots =>
                 resourceConstraints.Any(c =>
@@ -177,7 +211,8 @@ namespace Timetabler.Models
 
         public WeekSlot[][] GetPossibleSlotAllocations(SpreadConstraint constraint, IResource[] requiredResources)
         {
-            var allocations = GetPossibleSlotAllocations(constraint).Where(slots => !requiredResources.Except(GetAvailableResources(slots)).Any()).ToArray();
+            var allocations = GetPossibleSlotAllocations(constraint)
+                .Where(slots => requiredResources.All(r => GetAvailableResources(slots).Contains(r))).ToArray();
 
             return allocations;
         }
@@ -202,20 +237,36 @@ namespace Timetabler.Models
             return slots;
         }
 
-        public ISession[] GetAllocations(IResource resource, WeekSlot[] slots)
+        public ISession[] GetResourceAllocations(IResource resource, WeekSlot[] slots)
         {
             var sessions = Blocks.SelectMany(b => b.EventGroups.SelectMany(g => g.Events.SelectMany(e => e.Sessions)))
                 .Where(s => s.GetSlotAllocations().Any(sa =>
-                    slots.Contains(sa.WeekSlot)) && s.AllResourceAllocations.Any(ra => ra.Resource == resource)).ToArray();
+                    slots.Contains(sa.WeekSlot)) && s.AllResourceAllocations.Any(ra => ra.Resource == resource))
+                .ToArray();
 
             return sessions.ToArray();
         }
 
-        public bool HasConflict(IResource resource, WeekSlot slot)
+        public ISession[] GetResourceAllocations(IResource resource)
         {
-            var allocations = GetAllocations(resource, new[] { slot });
+            return GetResourceAllocations(resource, Timetable.Slots);
+        }
+
+        public bool ResourceHasConflict(IResource resource, WeekSlot slot)
+        {
+            var allocations = GetResourceAllocations(resource, new[] { slot });
 
             return allocations.Length > 1;
+        }
+
+        public bool ResourceHasCapacity(IResource resource)
+        {
+            if (resource.MaxAllocations == -1)
+            {
+                return true;
+            }
+
+            return GetResourceAllocations(resource).Length < resource.MaxAllocations;
         }
 
         public bool Validate(out string validationError)
@@ -224,9 +275,15 @@ namespace Timetabler.Models
 
             foreach (var resource in Resources)
             {
+                if (resource.MaxAllocations > -1 && GetResourceAllocations(resource).Length > resource.MaxAllocations)
+                {
+                    validationError = $"Resource {resource.Name} has exceeded maximum allocations.";
+                    return false;
+                }
+                
                 foreach (var timetableSlot in Timetable.Slots)
                 {
-                    if (!resource.AllowSimultaneousSessions && HasConflict(resource, timetableSlot))
+                    if (!resource.AllowSimultaneousSessions && ResourceHasConflict(resource, timetableSlot))
                     {
                         validationError =
                             $"Resource {resource.Name} has conflict at day {timetableSlot.Day} slot {timetableSlot.Slot}.";

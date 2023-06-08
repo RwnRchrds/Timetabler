@@ -12,5 +12,6 @@ namespace Timetabler.Interfaces
         void DeallocateUnlockedResources();
         void DeallocateAllResources();
         bool HasRequiredResources();
+        bool Validate(string ownerName, out string validationError);
     }
 }
