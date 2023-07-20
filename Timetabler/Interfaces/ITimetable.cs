@@ -24,9 +24,8 @@ namespace Timetabler.Interfaces
         IBreak[] AddBreak(string name, int startSlot, int endSlot);
         void RemoveBreak(string name);
         void RemoveAllBreaks();
-        bool TrySolve(ISolver solver);
         bool Validate(out string validationError);
-        void ReserveSlot(int slot);
+        void ReserveSlotOnAllDays(int slot);
         void ReserveSlot(int slot, params int[] days);
         bool AreSlotsConsecutive(WeekSlot a, WeekSlot b);
     }

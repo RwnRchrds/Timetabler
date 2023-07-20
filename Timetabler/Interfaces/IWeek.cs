@@ -2,21 +2,19 @@
 
 namespace Timetabler.Interfaces
 {
-    public interface IWeek
+    public interface IWeek : ISessionOwner
     {
         ITimetable Timetable { get; }
         string Name { get; }
         IBlock[] Blocks { get; }
         IResource[] Resources { get; }
 
-        IBlock AddBlock(string name);
+        IBlock AddBlock(string name, int numberOfSlots);
         void RemoveBlock(string name);
         IResource AddResource(string name, params string[] tags);
         void RemoveResource(string name);
         void RemoveAllResources();
         void RemoveAllBlocks();
-        void RemoveUnlockedSessions();
-        void RemoveAllSessions();
         IResource[] GetAvailableResources(WeekSlot slot);
         IResource[] GetAvailableResources(WeekSlot[] slots);
         WeekSlot[][] GetPossibleSlotAllocations(SpreadConstraint constraint);

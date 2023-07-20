@@ -10,12 +10,22 @@ namespace Timetabler.Tests;
 public class TimetableTests
 {
     [Test]
+    public void Test()
+    {
+        var path = @"/folder/sub/document.txt";
+
+        var fileName = Path.GetFileName(path);
+
+        var dir = path.Replace(fileName, "");
+    }
+    
+    [Test]
     public void BasicTimetableTest()
     {
         var timetable = new Timetable(8, 5, 1);
         
-        timetable.ReserveSlot(0);
-        timetable.ReserveSlot(7);
+        timetable.ReserveSlotOnAllDays(0);
+        timetable.ReserveSlotOnAllDays(7);
 
         timetable.AddBreak("Break", 2, 3);
         timetable.AddBreak("Lunch", 4, 5);
@@ -67,7 +77,9 @@ public class TimetableTests
         AddSubjects(week1, 7);
         AddSubjects(week1, 8);
 
-        timetable.TrySolve(new DefaultSolver());
+        var solver = new DefaultSolver();
+
+        solver.TrySolve(timetable);
 
         var isValid = week1.Validate(out var error);
     }
@@ -98,7 +110,7 @@ public class TimetableTests
         {
             foreach (var subject in subjects)
             {
-                var block = week.AddBlock($"Year {yearGroup} {subject.SubjectName}");
+                var block = week.AddBlock($"Year {yearGroup} {subject.SubjectName}", 30);
                 block.AllocateResource(yearGroupResource, true);
 
                 var regGroups = week.Resources.Where(r => r.Name.StartsWith(yearGroup.ToString())).ToArray();

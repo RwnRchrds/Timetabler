@@ -3,6 +3,5 @@
     public interface ISessionOwner
     {
         ISession[] Sessions { get; }
-        ISlotAllocation[] SlotAllocations { get; }
     }
 }

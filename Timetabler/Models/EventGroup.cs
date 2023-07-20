@@ -18,9 +18,6 @@ namespace Timetabler.Models
 
         public ISession[] Sessions => Events.SelectMany(e => e.Sessions).ToArray();
 
-        public ISlotAllocation[] SlotAllocations =>
-            Events.SelectMany(e => e.Sessions.SelectMany(s => s.GetSlotAllocations())).ToArray();
-
         public IResourceAllocation[] AllResourceAllocations => ResourceAllocations.Union(Block.ResourceAllocations).ToArray();
 
         public IEvent[] Events => _events.ToArray();

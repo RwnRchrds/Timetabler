@@ -1,4 +1,5 @@
 ﻿using Timetabler.Interfaces;
+using Timetabler.Structs;
 
 namespace Timetabler.Models
 {
@@ -6,19 +7,21 @@ namespace Timetabler.Models
     {
         public IWeek Week { get; }
 
-        protected readonly ICollection<IEventGroup> EventGroupCollection;
+        private readonly ICollection<IEventGroup> _eventGroupCollection;
+        private readonly ICollection<WeekSlot[]> _slotAllocations;
 
         public Block(IWeek week, string name)
         {
             Week = week;
             Name = name;
-            EventGroupCollection = new HashSet<IEventGroup>();
+            _eventGroupCollection = new HashSet<IEventGroup>();
+            _slotAllocations = new HashSet<WeekSlot[]>();
         }
 
-        public string Name { get; }
+        public string Name { get; set; }
         public ISession[] Sessions => EventGroups.SelectMany(g => g.Events.SelectMany(e => e.Sessions)).ToArray();
-        public ISlotAllocation[] SlotAllocations => EventGroups.SelectMany(g => g.SlotAllocations).ToArray();
-        public IEventGroup[] EventGroups => EventGroupCollection.ToArray();
+        public IEventGroup[] EventGroups => _eventGroupCollection.ToArray();
+        public WeekSlot[][] SlotAllocations => _slotAllocations.ToArray();
 
         public bool Validate(out string validationError)
         {
@@ -37,40 +40,72 @@ namespace Timetabler.Models
 
         public IEventGroup AddEventGroup(string name)
         {
-            var eventGroup = EventGroupCollection.FirstOrDefault(g => g.Name == name);
+            var eventGroup = _eventGroupCollection.FirstOrDefault(g => g.Name == name);
 
             if (eventGroup == null)
             {
                 eventGroup = new EventGroup(this, name);
 
-                EventGroupCollection.Add(eventGroup);
+                _eventGroupCollection.Add(eventGroup);
             }
 
             return eventGroup;
         }
 
+        public void AddSlotAllocation(WeekSlot[] allocation)
+        {
+            _slotAllocations.Add(allocation);
+        }
+
+        public void RemoveAllSlotAllocations()
+        {
+            _slotAllocations.Clear();
+        }
+
         public void RemoveEventGroup(string name)
         {
-            var eventGroup = EventGroupCollection.FirstOrDefault(g => g.Name == name);
+            var eventGroup = _eventGroupCollection.FirstOrDefault(g => g.Name == name);
 
             if (eventGroup != null)
             {
-                EventGroupCollection.Remove(eventGroup);
+                _eventGroupCollection.Remove(eventGroup);
             }
         }
 
         public void RemoveAllEventGroups()
         {
-            EventGroupCollection.Clear();
+            _eventGroupCollection.Clear();
+        }
+        
+        public void RemoveUnlockedSessions()
+        {
+            foreach (var eventGroup in EventGroups)
+            {
+                foreach (var groupEvent in eventGroup.Events)
+                {
+                    groupEvent.RemoveUnlockedSessions();
+                }
+            }
+        }
+        
+        public void RemoveAllSessions()
+        {
+            foreach (var eventGroup in EventGroups)
+            {
+                foreach (var groupEvent in eventGroup.Events)
+                {
+                    groupEvent.RemoveAllSessions();
+                }
+            }
         }
 
         public IBlock Clone(IWeek week)
         {
             var block = new Block(week, Name);
 
-            foreach (var eventGroup in EventGroupCollection)
+            foreach (var eventGroup in _eventGroupCollection)
             {
-                block.EventGroupCollection.Add(eventGroup.Clone(block));
+                block._eventGroupCollection.Add(eventGroup.Clone(block));
             }
 
             return block;

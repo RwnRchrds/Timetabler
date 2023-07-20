@@ -177,8 +177,6 @@ namespace Timetabler.Models
             return timetableEvent;
         }
 
-        public ISlotAllocation[] SlotAllocations => Sessions.SelectMany(s => s.GetSlotAllocations()).ToArray();
-
         public IResourceAllocation[] AllResourceAllocations =>
             ResourceAllocations.Union(EventGroup.AllResourceAllocations).ToArray();
     }

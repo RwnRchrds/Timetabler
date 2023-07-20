@@ -17,13 +17,14 @@ namespace Timetabler.Models
         }
 
         public ITimetable Timetable { get; }
+        
         public string Name { get; }
 
         public IResource[] Resources => _resources.ToArray();
 
         public IBlock[] Blocks => _blocks.ToArray();
 
-        public IBlock AddBlock(string name)
+        public IBlock AddBlock(string name, int numberOfSlots)
         {
             var block = _blocks.FirstOrDefault(b => b.Name == name);
 
@@ -317,9 +318,11 @@ namespace Timetabler.Models
                 week._blocks.Add(block.Clone(week));
             }
 
-            timetable.AddWeek(week);
+            //timetable.AddWeek(week);
 
             return week;
         }
+
+        public ISession[] Sessions => Blocks.SelectMany(b => b.Sessions).ToArray();
     }
 }

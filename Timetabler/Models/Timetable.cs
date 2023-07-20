@@ -66,15 +66,6 @@ namespace Timetabler.Models
             _breaks.Clear();
         }
 
-        /// <summary>
-        /// Generates a solution for each week from the blocks that have been specified. A return value indicates whether a solution was able to be found.
-        /// </summary>
-        /// <returns></returns>
-        public bool TrySolve(ISolver solver)
-        {
-            return solver.TrySolve(this);
-        }
-
         public IWeek AddWeek(string name)
         {
             var week = _weeks.FirstOrDefault(w => w.Name == name);
@@ -136,7 +127,7 @@ namespace Timetabler.Models
             return true;
         }
 
-        public void ReserveSlot(int slot)
+        public void ReserveSlotOnAllDays(int slot)
         {
             ReserveSlot(slot, Enumerable.Range(0, Cycle.DaysPerWeek).ToArray());
         }
@@ -168,7 +159,6 @@ namespace Timetabler.Models
 
         public Cycle Cycle { get; }
         public DayOfWeek FirstDayOfWeek { get; set; }
-        public bool AllowSlotOverflow { get; set; }
 
         public TimetableConstraints Constraints { get; }
 
@@ -198,13 +188,11 @@ namespace Timetabler.Models
         {
             return Slots.Where(s => s.Slot == index).ToArray();
         }
-
-        /// <summary>
-        /// The weeks that provide a structure for the timetable.
-        /// </summary>
+        
         public IWeek[] Weeks => _weeks.ToArray();
 
         public WeekSlot[] Reservations => _reservations.ToArray();
+        
         public WeekSlot GetSlot(int day, int index)
         {
             return Slots.FirstOrDefault(s => s.Day == day && s.Slot == index);
