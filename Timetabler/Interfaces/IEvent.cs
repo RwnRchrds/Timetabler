@@ -1,20 +1,19 @@
-﻿using Timetabler.Structs;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Timetabler.Structs;
 
 namespace Timetabler.Interfaces
 {
-    public interface IEvent : IResourceOwner, IResourceOwnerChild, ISessionOwner
+    public interface IEvent
     {
-        IEventGroup EventGroup { get; }
-        string Name { get; }
+        public string Name { get; set; }
         SpreadConstraint SpreadConstraint { get; }
-        ResourceConstraint[] SessionResourceConstraints { get; }
-        ISession[] Sessions { get; }
-        void RequireSessionResource(string resourceTag, int quantity);
-        ISession AddSession(WeekSlot[] slots, bool locked);
-        void RemoveSession(Guid id);
-        void RemoveUnlockedSessions();
-        void RemoveAllSessions();
-        bool Validate(out string validationError);
-        IEvent Clone(IEventGroup eventGroup);
+        public IReadOnlyList<ResourceConstraint> ResourceConstraints { get; }
+        public IReadOnlyList<ResourceConstraint> OccurrenceResourceConstraint { get; }
+        public IReadOnlyList<ResourceAllocation> ResourceAllocations { get; }
+        public IReadOnlyList<IOccurrence> Occurrences { get; }
     }
 }

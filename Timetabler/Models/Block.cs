@@ -1,114 +1,54 @@
-﻿using Timetabler.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Timetabler.Exceptions;
+using Timetabler.Interfaces;
 using Timetabler.Structs;
 
 namespace Timetabler.Models
 {
-    public class Block : ResourceOwner, IBlock
+    public class Block : IBlock
     {
-        public IWeek Week { get; }
-
-        private readonly ICollection<IEventGroup> _eventGroupCollection;
-        private readonly ICollection<WeekSlot[]> _slotAllocations;
-
-        public Block(IWeek week, string name)
-        {
-            Week = week;
-            Name = name;
-            _eventGroupCollection = new HashSet<IEventGroup>();
-            _slotAllocations = new HashSet<WeekSlot[]>();
-        }
+        private ICollection<CycleSlot> _slots;
+        private ICollection<ResourceAllocation> _resourceAllocations;
+        private ICollection<IEvent> _events;
 
         public string Name { get; set; }
-        public ISession[] Sessions => EventGroups.SelectMany(g => g.Events.SelectMany(e => e.Sessions)).ToArray();
-        public IEventGroup[] EventGroups => _eventGroupCollection.ToArray();
-        public WeekSlot[][] SlotAllocations => _slotAllocations.ToArray();
+        public IReadOnlyList<CycleSlot> Slots => _slots.ToArray();
+        public IReadOnlyList<ResourceAllocation> ResourceAllocations => _resourceAllocations.ToArray();
+        public IReadOnlyList<IEvent> Events => _events.ToArray();
 
-        public bool Validate(out string validationError)
+
+        internal Block(string name)
         {
-            validationError = "";
+            Name = name;
+            _slots = new List<CycleSlot>();
+            _resourceAllocations = new List<ResourceAllocation>();
+            _events = new List<IEvent>();
+        }
 
-            foreach (var eventGroup in EventGroups)
+        public IEvent AddEvent(string name, int duration, int quantity)
+        {
+            if (Events.Any(e => e.Name == name))
             {
-                if (!eventGroup.Validate(out validationError))
-                {
-                    return false;
-                }
+                throw new TimetableException($"An event with name '{name}' already existing in block {Name}.");
             }
 
-            return Validate(Name, out validationError);
+            var timetableEvent = new Event(name, duration, quantity);
+            _events.Add(timetableEvent);
+            return timetableEvent;
         }
 
-        public IEventGroup AddEventGroup(string name)
+        public void AllocateResource(IResource resource, bool locked)
         {
-            var eventGroup = _eventGroupCollection.FirstOrDefault(g => g.Name == name);
-
-            if (eventGroup == null)
+            if (ResourceAllocations.Any(ra => ra.Resource.Name == resource.Name))
             {
-                eventGroup = new EventGroup(this, name);
-
-                _eventGroupCollection.Add(eventGroup);
+                throw new TimetableException($"Resource with name '{resource.Name}' is already allocated to this block.");
             }
 
-            return eventGroup;
-        }
-
-        public void AddSlotAllocation(WeekSlot[] allocation)
-        {
-            _slotAllocations.Add(allocation);
-        }
-
-        public void RemoveAllSlotAllocations()
-        {
-            _slotAllocations.Clear();
-        }
-
-        public void RemoveEventGroup(string name)
-        {
-            var eventGroup = _eventGroupCollection.FirstOrDefault(g => g.Name == name);
-
-            if (eventGroup != null)
-            {
-                _eventGroupCollection.Remove(eventGroup);
-            }
-        }
-
-        public void RemoveAllEventGroups()
-        {
-            _eventGroupCollection.Clear();
-        }
-        
-        public void RemoveUnlockedSessions()
-        {
-            foreach (var eventGroup in EventGroups)
-            {
-                foreach (var groupEvent in eventGroup.Events)
-                {
-                    groupEvent.RemoveUnlockedSessions();
-                }
-            }
-        }
-        
-        public void RemoveAllSessions()
-        {
-            foreach (var eventGroup in EventGroups)
-            {
-                foreach (var groupEvent in eventGroup.Events)
-                {
-                    groupEvent.RemoveAllSessions();
-                }
-            }
-        }
-
-        public IBlock Clone(IWeek week)
-        {
-            var block = new Block(week, Name);
-
-            foreach (var eventGroup in _eventGroupCollection)
-            {
-                block._eventGroupCollection.Add(eventGroup.Clone(block));
-            }
-
-            return block;
+            _resourceAllocations.Add(new ResourceAllocation(resource, locked));
         }
     }
 }

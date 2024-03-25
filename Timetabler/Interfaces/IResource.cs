@@ -1,10 +1,14 @@
-﻿namespace Timetabler.Interfaces
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Timetabler.Interfaces
 {
     public interface IResource
     {
-        ICollection<string> Tags { get; }
         string Name { get; set; }
-        int MaxAllocations { get; set; }
-        bool AllowSimultaneousSessions { get; set; }
+        IReadOnlyList<string> ResourceTags { get; }
     }
 }
